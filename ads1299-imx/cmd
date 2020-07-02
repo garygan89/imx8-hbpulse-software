@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo ./ads -D /dev/spidev1.0 -v -H -d 200 -s 2250000
