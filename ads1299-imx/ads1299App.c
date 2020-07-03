@@ -77,7 +77,22 @@
 # define WCT1  0x18
 # define WCT2  0x19
 
-# define SPI_RESET 0x06
+
+// SPI commands
+# define	SPI_WAKEUP  0x02
+# define	SPI_STANDBY  0x04
+# define	SPI_RESET  0x06
+# define	SPI_START  0x08
+# define	SPI_STOP  0x0a
+
+	// read commands
+# define	SPI_RDATAC  0x10
+# define	SPI_SDATAC  0x11
+# define	SPI_RDATA  0x12
+
+	// register commands
+# define	SPI_RREG  0x20
+# define	SPI_WREG  0x40
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
@@ -563,6 +578,28 @@ int main(int argc, char *argv[])
 //		printf("R: %d (%#02x)\n", int_to_bin(out), out);
 
 	}
+
+
+	// Start RDATAC
+	printf("Sending SPI START command...\n");
+	uint8_t tx10[] = { SPI_START };
+	transfer(fd, tx10, default_rx, sizeof(tx10)); // reg start
+
+	printf("Sending SPI SDATAC command...\n");
+	uint8_t tx11[] = { SPI_SDATAC };
+	transfer(fd, tx11, default_rx, sizeof(tx11)); // reg start
+
+	// wait for INT signal...
+//	while {
+		printf("Sending SPI RDATA command...\n");
+	//	uint8_t tx12[] = { SPI_RDATA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+		uint8_t tx12[28]; // (RDATA + STATUS(3) + 8Channel*3Byte) 1+3+(3*8)
+		memset(&tx12, 0, 28*sizeof(uint8_t));
+
+		tx12[0] = SPI_RDATA;
+		transfer(fd, tx12, default_rx, sizeof(tx12)); // reg start
+//	}
+
 //
 //	// read all registers
 //	void adc_rregs(int spi_cs, int regStartAddr, int regEndAddr) {
