@@ -21,6 +21,11 @@ sep2="-------------------------"
 declare -i ERROR_WPA_SUPPLICANT=1 # as int
 declare -i ERROR_UDHCP=2
 
+# path
+WPA_SUPPLICANT_CONFIG_PATH='/etc/wpa_supplicant/wpa_supplicant-wlan0.conf' # active config used by wpa_supplicant
+WPA_SUPPLICANT_DEFAULT_CONFIG_PATH='/etc/wpa_supplicant/wpa_supplicant-wlan0.conf.orig' # system default
+WPA_SUPPLICANT_CONFIG_BACKUP_PATH='/etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak' # backup of user file
+
 function _readinput() {
     local _resultvar=$1
     read input
@@ -30,6 +35,13 @@ function _readinput() {
     done    
     
     eval $_resultvar="$input"
+}
+
+function _checkwpaconfigfile() {
+    if [ ! -f $WPA_SUPPLICANT_CONFIG_PATH ]; then
+        echo "${yellow}Unable to find config file, restoring from default config...${normal}"
+        _restoredefaultwificonfig
+    fi
 }
 
 function _configure_wifi() {
@@ -49,13 +61,15 @@ function _configure_wifi() {
         esac
     done 
     
+    # check config file
+    _checkwpaconfigfile
     
     # generate passphrase
-    wpa_passphrase $ap_name $ap_pass >> /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    sudo bash -c "wpa_passphrase $ap_name $ap_pass >> /etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
     
     # connect to ap
     echo "Connecting to AP=$ap_name via wpa_supplicant..."
-    wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant-wlan0.conf -D nl80211 
+    sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant-wlan0.conf -D nl80211 
     
     if [ ! $? -eq 0 ]; then
         # exit $ERROR_WPA_SUPPLICANT
@@ -64,7 +78,7 @@ function _configure_wifi() {
     
     # get ip from dhcp    
     echo "Getting IP from DHCP server..."
-    udhcpc -i wlan0
+    sudo udhcpc -i wlan0
     
     if [ ! $? -eq 0 ]; then
         # exit $ERROR_UDHCP
@@ -116,22 +130,33 @@ function _deletewificonfig() {
 }
 
 function _backupwificonfig() {
-    if [ -f '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf' ]; then
-        sudo cp '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf' '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak'
-        echo "${green}Successfully backed up to /etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak${normal}"
-    else
-        echo "${red}Cannot find /etc/wpa_supplicant/wpa_supplicant-wlan0.conf to backup!${normal}"
-    fi
-
+    _backupfile $WPA_SUPPLICANT_CONFIG_PATH $WPA_SUPPLICANT_CONFIG_BACKUP_PATH
 }
 
-function _restorewificonfig() {
-    if [ -f '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak' ]; then
-        sudo cp '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak' '/etc/wpa_supplicant/wpa_supplicant-wlan0.conf'
-        echo "${green}Successfully restored from /etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak${normal}"
+function _restorelastusedwificonfig() {
+    _restorefile $WPA_SUPPLICANT_CONFIG_BACKUP_PATH $WPA_SUPPLICANT_CONFIG_PATH
+}
+
+function _restoredefaultwificonfig() {
+    _restorefile $WPA_SUPPLICANT_DEFAULT_CONFIG_PATH $WPA_SUPPLICANT_CONFIG_PATH
+}
+
+function _backupfile() {
+    if [ -f "$1" ]; then
+        sudo cp "$1" "$2"
+        echo "${green}Successfully backed up to $2 ${normal}"
     else
-        echo "${red}Cannot find /etc/wpa_supplicant/wpa_supplicant-wlan0.conf.bak${normal}"
-    fi
+        echo "${red}Cannot find $1 ${normal}"
+    fi    
+}
+
+function _restorefile() {
+    if [ -f "$1" ]; then
+        sudo cp "$1" "$2"
+        echo "${green}Successfully restored from $1 ${normal}"
+    else
+        echo "${red}Cannot find $1 ${normal}"
+    fi    
 }
 
 function _list_net_interface() {
@@ -152,10 +177,11 @@ function _askinput() {
         echo -e "2) Show wifi config"
         echo -e "3) Delete wifi config"
         echo -e "4) Backup wifi config"
-        echo -e "5) Restore wifi config"
-        echo -e "6) Enable autostart service"
-        echo -e "7) Disable autostart service"
-        echo -e "8) List all network interfaces"
+        echo -e "5) Restore last used wifi config"
+        echo -e "6) Restore system default wifi config"
+        echo -e "7) Enable autostart service"
+        echo -e "8) Disable autostart service"
+        echo -e "9) List all network interfaces"
         echo -e "99) Exit"
         echo "Enter an action: " ; read response
         case $response in
@@ -163,10 +189,11 @@ function _askinput() {
             02 | 2 ) _showwificonfig ;;
             03 | 3 ) _deletewificonfig ;;
             04 | 4 ) _backupwificonfig ;;
-            05 | 5 ) _restorewificonfig ;;
-            06 | 6 ) _enableservicefile ;;
-            07 | 7 ) _disableservicefile ;;
-            08 | 8 ) _list_net_interface ;;
+            05 | 5 ) _restorelastusedwificonfig ;;
+            06 | 6 ) _restoredefaultwificonfig ;;
+            07 | 7 ) _enableservicefile ;;
+            08 | 8 ) _disableservicefile ;;
+            09 | 9 ) _list_net_interface ;;
             99 ) exit ;;
             # "" | * ) action=auto ;;
         esac
