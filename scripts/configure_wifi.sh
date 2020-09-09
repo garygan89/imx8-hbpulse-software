@@ -31,7 +31,7 @@ function _readinput() {
     read input
     while [[ $input = "" ]]; do
         echo "Please check your input"
-        read input
+        read -r input
     done    
     
     eval $_resultvar="$input"

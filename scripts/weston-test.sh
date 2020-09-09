@@ -32,17 +32,47 @@ function _launchweston() {
     sudo XDG_RUNTIME_DIR=/tmp/xdg weston --tty="$WESTON_TTY" --idle-time=0 --backend=fbdev-backend.so &
 
     # run sample code
-    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-terminal
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-terminal
     # should show spinning triangle
-    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-simple-egl
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-simple-egl
     # should show a white clover
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-flower
+}
+
+function _openwestonterminal() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-terminal
+}
+
+function _openwestonflower() {
     sudo XDG_RUNTIME_DIR=/tmp/xdg weston-flower
 }
 
-_checkfbdev
+function _openwestonsimpleegl() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-simple-egl
+}
 
-echo "Launching weston desktop compositor, you should see a desktop interface..."
-_launchweston
+function _askinput() {
+    while [[ $action = "" ]]; do
+        echo $sep2
+        echo "Test Video MENU"
+        echo -n ""
+        echo -e "1) Launch weston compositor (run once only and you should see a desktop)"
+        echo -e "2) Open weston-terminal"
+        echo -e "3) Open weston-flower"
+        echo -e "99) Exit"
+        echo "Enter an action: " ; read response
+        case $response in
+            01 | 1 ) _launchweston ;;
+            02 | 2 ) _openwestonterminal ;;
+            03 | 3 ) _openwestonflower ;;
+            99 ) exit ;;
+            # "" | * ) action=auto ;;
+        esac
+    done
+}
+
+_checkfbdev
+_askinput
 
 
 

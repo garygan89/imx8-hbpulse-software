@@ -1,0 +1,88 @@
+#!/bin/bash
+# A simple shell script to manage wifi using wpa_supplicant and udhcpc
+# Last Update: Sep-07-2020
+# By: Gary
+# --------------------------------------------------------------------------------
+black=$(tput setaf 0); red=$(tput setaf 1); green=$(tput setaf 2); yellow=$(tput setaf 3);
+blue=$(tput setaf 4); magenta=$(tput setaf 5); cyan=$(tput setaf 6); white=$(tput setaf 7);
+on_red=$(tput setab 1); on_green=$(tput setab 2); on_yellow=$(tput setab 3); on_blue=$(tput setab 4);
+on_magenta=$(tput setab 5); on_cyan=$(tput setab 6); on_white=$(tput setab 7); bold=$(tput bold);
+dim=$(tput dim); underline=$(tput smul); reset_underline=$(tput rmul); standout=$(tput smso);
+reset_standout=$(tput rmso); normal=$(tput sgr0); alert=${white}${on_red}; title=${standout};
+baihuangse=${white}${on_yellow}; bailanse=${white}${on_blue}; bailvse=${white}${on_green};
+baiqingse=${white}${on_cyan}; baihongse=${white}${on_red}; baizise=${white}${on_magenta}; jiacu=${normal}${bold}
+heibaise=${black}${on_white}; shanshuo=$(tput blink); wuguangbiao=$(tput civis); guangbiao=$(tput cnorm)
+CW="${bold}${baihongse} ERROR ${jiacu}";ZY="${baihongse}${bold} ATTENTION ${jiacu}";JG="${baihongse}${bold} WARNING ${jiacu}"
+sep="==============================================="
+sep2="-------------------------"
+# --------------------------------------------------------------------------------
+
+# path
+VIDEO_ROOT_DIR="/home/debian/imx8-hbpulse-software/demovideo"
+VIDEO_BBB_1080P="$VIDEO_ROOT_DIR/Big_Buck_Bunny_1080_10s_30MB.mp4"
+VIDEO_IAMLEGEND_1080P="$VIDEO_ROOT_DIR/I_Am_Legend_Trailer.mp4"
+VIDEO_SKYFALL_4K="$VIDEO_ROOT_DIR/SKYFALL-4K.mp4"
+VIDEO_BBB_1080P_AVI="$VIDEO_ROOT_DIR/trailer_1080p_h264_mp3.avi"
+
+VIDEO_ONLINE_BBB_720P="http://distribution.bbb3d.renderfarming.net/video/mp4/big_buck_bunny_720p_surround.avi"
+VIDEO_ONLINE_BBB_1080P="http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4"
+
+function _readinput() {
+    local _resultvar=$1
+    read input
+    while [[ $input = "" ]]; do
+        echo "Please check your input"
+        read input
+    done    
+    
+    eval $_resultvar="$input"
+}
+
+function _play_online() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg GST_DEBUG=imxvpudec:6 gst-launch-1.0 playbin3 uri=$1 video-sink=waylandsink
+}
+
+function _play_local() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg GST_DEBUG=imxvpudec:6 gst-launch-1.0 playbin3 uri="file://${1}" video-sink=waylandsink
+}
+
+function _pause() {
+    echo "<Press Enter to continue...>"; read
+}
+
+function _askinput() {
+    while [[ $action = "" ]]; do
+        echo $sep2
+        echo "Test Video MENU"
+        echo -n ""
+        echo -e "1) Play 1080p video - BBB (local source)"
+        echo -e "2) Play 1080p video - IAMLEGEND (local source)"
+        echo -e "3) Play 4K video - SKYFALL (local source)"
+        echo -e "4) Play 720p video (online source)"
+        echo -e "5) Play 1080p video (online source)"
+        echo -e "99) Exit"
+        echo "Enter an action: " ; read response
+        case $response in
+            01 | 1 ) _play_local $VIDEO_BBB_1080P ;;
+            02 | 2 ) _play_local $VIDEO_IAMLEGEND_1080P ;;
+            03 | 3 ) _play_local $VIDEO_SKYFALL_4K ;;
+            04 | 4 ) _play_online $VIDEO_ONLINE_BBB_720P ;;
+            05 | 5 ) _play_online $VIDEO_ONLINE_BBB_1080P ;;
+            99 ) exit ;;
+            # "" | * ) action=auto ;;
+        esac
+    done
+
+    # if [[ $action == config_wifi ]]; then
+        # echo "${bold}Configuring wifi...${normal}"
+        # _configure_wifi
+    # elif [[ $bdscan == list_netif ]]; then
+        # echo "${bold}Listing all network interfaces...${normal}"
+    # fi
+    
+}
+
+
+
+
+_askinput
