@@ -1,0 +1,9 @@
+Using dts from solidrun linux-stable repo, branch linux-4.19.y-imx8
+https://github.com/SolidRun/linux-stable/tree/linux-4.19.y-imx8
+
+commit of 2020-Aug-20, hash:
+https://github.com/SolidRun/linux-stable/commit/637d83084da8868d1efb952be3ef47f9d018be4d
+
+My modification:
+- add spidev status ok
+- add bluetooth
