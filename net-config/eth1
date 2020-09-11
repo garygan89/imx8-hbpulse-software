@@ -1,0 +1,5 @@
+# copy to /etc/network/interfaces.d/eth1
+# eth1 automatic configuration
+allow-hotplug eth1
+iface eth1 inet dhcp
+iface eth1 inet6 auto
