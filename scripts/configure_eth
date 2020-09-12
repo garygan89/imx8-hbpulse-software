@@ -1,0 +1,45 @@
+#!/bin/bash
+# Test weston compositor
+
+-
+black=$(tput setaf 0); red=$(tput setaf 1); green=$(tput setaf 2); yellow=$(tput setaf 3);
+blue=$(tput setaf 4); magenta=$(tput setaf 5); cyan=$(tput setaf 6); white=$(tput setaf 7);
+on_red=$(tput setab 1); on_green=$(tput setab 2); on_yellow=$(tput setab 3); on_blue=$(tput setab 4);
+on_magenta=$(tput setab 5); on_cyan=$(tput setab 6); on_white=$(tput setab 7); bold=$(tput bold);
+dim=$(tput dim); underline=$(tput smul); reset_underline=$(tput rmul); standout=$(tput smso);
+reset_standout=$(tput rmso); normal=$(tput sgr0); alert=${white}${on_red}; title=${standout};
+sep="==============================================="
+sep2="-------------------------"
+# --------------------------------------------------------------------------------
+
+function _enable_network_interface() {
+    echo "Configuring network interface: ${yellow}$1${normal}"
+    ifdown $1 && ifup $1
+    systemctl restart networking
+}
+
+function _askinput() {
+    while [[ $action = "" ]]; do
+        echo $sep2
+        echo "${bold}Configure ethernet port MENU${normal}"
+        echo -n ""
+        echo -e "1) Enable eth0"
+        echo -e "2) Enable eth1"
+        echo -e "3) Enable eth2"
+        echo -e "99) Exit"
+        echo "Enter an action: " ; read response
+        case $response in
+            01 | 1 ) _enable_network_interface eth0 ;;
+            02 | 2 ) _enable_network_interface eth1 ;;
+            03 | 3 ) _enable_network_interface eth2 ;;
+            99 ) exit ;;
+            # "" | * ) action=auto ;;
+        esac
+    done
+}
+
+_askinput
+
+
+
+ 
