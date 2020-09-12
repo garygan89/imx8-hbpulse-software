@@ -14,8 +14,9 @@ sep2="-------------------------"
 
 function _enable_network_interface() {
     echo "Configuring network interface: ${yellow}$1${normal}"
-    ifdown $1 && ifup $1
+    # restart networking service before bringing interface up
     systemctl restart networking
+    ifdown $1 && ifup $1
 }
 
 function _askinput() {
