@@ -1,7 +1,6 @@
 #!/bin/bash
 # Test weston compositor
 
--
 black=$(tput setaf 0); red=$(tput setaf 1); green=$(tput setaf 2); yellow=$(tput setaf 3);
 blue=$(tput setaf 4); magenta=$(tput setaf 5); cyan=$(tput setaf 6); white=$(tput setaf 7);
 on_red=$(tput setab 1); on_green=$(tput setab 2); on_yellow=$(tput setab 3); on_blue=$(tput setab 4);
@@ -15,8 +14,24 @@ sep2="-------------------------"
 function _enable_network_interface() {
     echo "Configuring network interface: ${yellow}$1${normal}"
     # restart networking service before bringing interface up
-    systemctl restart networking
-    ifdown $1 && ifup $1
+    sudo systemctl restart networking
+    sudo ifdown $1 && sudo ifup $1
+    
+    # check ping
+    echo "Test pinging IP..."
+    _ping 8.8.8.8
+    echo "Checking DNS..."
+    _ping google.com
+}
+
+function _ping() {
+    echo "Pinging $1"
+    ping -c 2 $1 > /dev/null 2>&1
+    if [ "$? = 0 " ]; then
+        echo "${green}OK${normal}"
+    else
+        echo "${red}FAILED${normal}"
+    fi
 }
 
 function _askinput() {
