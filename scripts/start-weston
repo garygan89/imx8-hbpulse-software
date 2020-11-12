@@ -23,7 +23,11 @@ function _launchweston() {
      
     # Choose a valid tty
     export WESTON_TTY=1 
-     
+	
+	# use GL HW acceleration, make sure to run weston with drm-backend.so
+	# otherwise video playback is choppy
+	export GST_GL_PLATFORM=egl GST_GL_API=gles2 GST_GL_WINDOW=gbm
+
     # Launch Weston
     # need to use fbdev-backend, otherwise following will have seg fault
     # sudo XDG_RUNTIME_DIR=/tmp/xdg weston --tty="$WESTON_TTY" --idle-time=0 & 

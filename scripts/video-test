@@ -23,6 +23,7 @@ VIDEO_BBB_1080P="$VIDEO_ROOT_DIR/Big_Buck_Bunny_1080_10s_30MB.mp4"
 VIDEO_IAMLEGEND_1080P="$VIDEO_ROOT_DIR/I_Am_Legend_Trailer.mp4"
 VIDEO_SKYFALL_4K="$VIDEO_ROOT_DIR/SKYFALL-4K.mp4"
 VIDEO_BBB_1080P_AVI="$VIDEO_ROOT_DIR/trailer_1080p_h264_mp3.avi"
+VIDEO_MFSSVEP_AVRO_PATTERN_A="$VIDEO_ROOT_DIR/mfssvep-avro-pattern-a.mp4"
 
 VIDEO_ONLINE_BBB_720P="http://distribution.bbb3d.renderfarming.net/video/mp4/big_buck_bunny_720p_surround.avi"
 VIDEO_ONLINE_BBB_1080P="http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4"
@@ -39,11 +40,11 @@ function _readinput() {
 }
 
 function _play_online() {
-    sudo XDG_RUNTIME_DIR=/tmp/xdg GST_DEBUG=imxvpudec:6 gst-launch-1.0 playbin3 uri=$1 video-sink=waylandsink
+    sudo XDG_RUNTIME_DIR=/tmp/xdg gst-launch-1.0 playbin3 uri=$1 video-sink=waylandsink
 }
 
 function _play_local() {
-    sudo XDG_RUNTIME_DIR=/tmp/xdg GST_DEBUG=imxvpudec:6 gst-launch-1.0 playbin3 uri="file://${1}" video-sink=waylandsink
+    sudo XDG_RUNTIME_DIR=/tmp/xdg gst-launch-1.0 playbin3 uri="file://${1}" video-sink=waylandsink
 }
 
 function _pause() {
@@ -60,6 +61,7 @@ function _askinput() {
         echo -e "3) Play 4K video - SKYFALL (local source)"
         echo -e "4) Play 720p video (online source)"
         echo -e "5) Play 1080p video (online source)"
+	echo -e "6) mfSSVEP AVRO Pattern A (local source)"
         echo -e "99) Exit"
         echo "Enter an action: " ; read response
         case $response in
@@ -68,6 +70,7 @@ function _askinput() {
             03 | 3 ) _play_local $VIDEO_SKYFALL_4K ;;
             04 | 4 ) _play_online $VIDEO_ONLINE_BBB_720P ;;
             05 | 5 ) _play_online $VIDEO_ONLINE_BBB_1080P ;;
+            06 | 6 ) _play_local $VIDEO_MFSSVEP_AVRO_PATTERN_A ;;
             99 ) exit ;;
             # "" | * ) action=auto ;;
         esac
