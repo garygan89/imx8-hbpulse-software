@@ -1,0 +1,14 @@
+[Unit]
+Description=mfSSVEP Visual Stimuli with LSL Streaming
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/media/sdcard/app
+ExecStart=python3 /media/sdcard/app/mfssvep-vs.py
+
+[Install]
+WantedBy=multi-user.target

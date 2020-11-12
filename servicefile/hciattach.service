@@ -1,0 +1,14 @@
+[Unit]
+Description=uBlox Nina B1 HCI Interface
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+#User=root
+WorkingDirectory=/media/sdcard/bluetooth
+ExecStart=/bin/bash /media/sdcard/bluetooth/hciinit_ublox_ninab1.sh
+
+[Install]
+WantedBy=multi-user.target

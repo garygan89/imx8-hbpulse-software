@@ -1,0 +1,13 @@
+[Unit]
+Description=Dbus based GATT Server that runs custom UART services for Bluetooth Low Energy to run nPod service.
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=python3 /media/sdcard/bluetooth/uart_peripheral.py
+
+[Install]
+WantedBy=multi-user.target
