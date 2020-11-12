@@ -1,0 +1,8 @@
+{
+    "app_root": "/media/sdcard",
+    "app_dir": "app",
+    "app_config_dir": "app/configs",
+    "app_recording_data_dir": "logs",
+    "app_scripts_dir": "scripts",
+    "tool_dir": "tools"
+}
