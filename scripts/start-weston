@@ -1,0 +1,81 @@
+#!/bin/bash
+# Test weston compositor
+
+function _checkfbdev() {
+    echo "Check if /dev/fb0 exist..."
+
+    ls /dev/fb0 > /dev/null
+    if [ ! $? -eq 0 ]; then
+        echo "Cannot find /dev/fb0"
+        exit 1
+    else
+        echo "OK"
+    fi
+}
+
+function _launchweston() {
+    # Stop X xerver
+    sudo service gdm stop; sudo pkill -9 Xorg
+    # Environment and directory setup
+    unset DISPLAY
+    mkdir /tmp/xdg
+    chmod 700 /tmp/xdg
+     
+    # Choose a valid tty
+    export WESTON_TTY=1 
+     
+    # Launch Weston
+    # need to use fbdev-backend, otherwise following will have seg fault
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston --tty="$WESTON_TTY" --idle-time=0 & 
+    # Optional: WAYLAND_DEBUG=server
+    # Optional: use --use-egldevice to disable gbm swapchains and use EGLStreams at weston output
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston --tty="$WESTON_TTY" --idle-time=0 --backend=fbdev-backend.so &
+	sudo XDG_RUNTIME_DIR=/tmp/xdg weston --tty="$WESTON_TTY" --idle-time=0 --backend=drm-backend.so &
+
+    # run sample code
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-terminal
+    # should show spinning triangle
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-simple-egl
+    # should show a white clover
+    # sudo XDG_RUNTIME_DIR=/tmp/xdg weston-flower
+}
+
+function _openwestonterminal() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-terminal
+}
+
+function _openwestonflower() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-flower
+}
+
+function _openwestonsimpleegl() {
+    sudo XDG_RUNTIME_DIR=/tmp/xdg weston-simple-egl
+}
+
+function _askinput() {
+    while [[ $action = "" ]]; do
+        echo $sep2
+        echo "Test Video MENU"
+        echo -n ""
+        echo -e "1) Launch weston compositor (run once only and you should see a desktop)"
+        echo -e "2) Open weston-terminal"
+        echo -e "3) Open weston-flower"
+        echo -e "99) Exit"
+        echo "Enter an action: " ; read response
+        case $response in
+            01 | 1 ) _launchweston ;;
+            02 | 2 ) _openwestonterminal ;;
+            03 | 3 ) _openwestonflower ;;
+            99 ) exit ;;
+            # "" | * ) action=auto ;;
+        esac
+    done
+}
+
+_checkfbdev
+_launchweston
+# _askinput
+
+
+
+
