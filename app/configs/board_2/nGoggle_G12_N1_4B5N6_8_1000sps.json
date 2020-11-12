@@ -1,0 +1,112 @@
+{
+    "config1": {
+        "daisy_chain_mode": false,
+        "oscillator_clock_output": false,
+        "sampling_rate": 1000
+    },
+
+    "test_signal_generation": {
+        "test_source": "internal",
+        "test_signal_amplitude": 1,
+        "test_signal_frequency": "1"
+    },
+
+    "bias_operations": {
+        "internal_reference_buffer_enabled": true,
+        "bias_measurement": true,
+        "bias_ref_signal": "internal",
+        "bias_buffer_power": true,
+        "bias_sense_function": false,
+        "bias_lead_off_status" : true
+    },
+
+    "lead_off_operations": {
+        "lo_comparator_threshold": 70,
+        "lo_current_magnitude": "6n",
+        "lo_frequency": "dc"
+    },
+    
+    "channels": [
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },  
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },     
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        },
+        {
+            "channel_power_mode": true,
+            "channel_gain": 12,
+            "channel_srb_connection": false,
+            "channel_input_type": "normal"
+        }                                   
+    ],
+
+    "bias_drive_positive_sense_selection": [
+        true, true, true, true, true, true, true, true
+    ],
+
+    "bias_drive_negative_sense_selection": [
+        true, true, true, true, true, true, true, true
+    ],  
+
+    "lead_off_positive_sense_selection": [
+        true, true, true, true, true, true, true, true
+    ],  
+
+    "lead_off_negative_sense_selection": [
+        false, false, false, false, false, false, false, false
+    ], 
+
+    "lead_off_current_direction_control": [
+        false, false, false, false, false, false, false, false   
+    ],  
+
+    "gpio_register": [
+        "input", "input", "input", "input"
+    ],
+
+    "misc1": {      
+        "srb1_to_eight_channel_invert_input": true
+    },
+
+    "config4": {   
+        "single_shot_conversion": false,
+        "lead_off_comparator_enabled": true
+    }
+}
